@@ -1,0 +1,1 @@
+~/bin/splitGenericJobsOnHercules_byFiles.py -l data -b /gwpool/users/benaglia/WtoJPsiDs/WExclAnalysis -e bin/wexcl_analysis2.exe -i /gwteras/cms/store/user/abenagli/WtoJPsiDs/MuOnia/WtoJPsiDs_ntuples_data/ -o /gwpool/users/benaglia/WtoJPsiDs/WExclAnalysis/plots/ -f plots -c cfg/analysis_data_template.cfg -n 40 -q shortcms -s
