@@ -1,7 +1,6 @@
 * Exclusive W decays Analysis
 
-** Setup
-   usual stuff:
+** Setup usual stuff:
    : cmsrel CMSSW_8_0_25
    : cd CMSSW_8_0_25/src
    : cmsenv
