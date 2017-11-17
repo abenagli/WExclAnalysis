@@ -1,0 +1,3 @@
+[submodule "DynamicTTree"]
+	path = DynamicTTree
+	url = git@github.com:abenagli/DynamicTTree
