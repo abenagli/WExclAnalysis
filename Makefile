@@ -49,7 +49,7 @@ CPPFLAGS  = -Wall -I$(DIR) $(ROOTCFLAGS)
 
 LD       =  g++
 LDFLAGS  =  -rdynamic -shared -O2
-SONAME	 =  libWExclAnalysis.so
+SONAME	 =  libHtoMuMuAnalysis.so
 SOFLAGS  =  -Wl,-soname,
 
 GLIBS   =  -lm -ldl -rdynamic -L./DynamicTTree/lib -L./CfgManager/lib -lDynamicTTree -lCfgManager $(ROOTGLIBS)
@@ -66,7 +66,7 @@ CPPFLAGS  =  -Wall -W -O2 -pipe -I$(DIR) $(ROOTCFLAGS)
 CXXFLAGS  =  -Wall -W -O2 -pipe -I$(DIR) $(ROOTCFLAGS)
 
 LDFLAGS  =  -dynamiclib -shared -single_module -undefined dynamic_lookup
-SONAME	 =  libWExclAnalysis.dylib
+SONAME	 =  libHtoMuMuAnalysis.dylib
 SOFLAGS  =  -Wl,-install_name,
 endif
 #################################################
@@ -92,7 +92,7 @@ test:
 	@echo "BINS = $(BINS)"
 
 $(BIN)%$(BINSuf): $(PRG)%$(PRGSuf) $(HDRS) $(LIB)$(SONAME)
-	$(CPP) $(CPPFLAGS) $(GLIBS) -L$(LIB) -lWExclAnalysis -o $@ $<
+	$(CPP) $(CPPFLAGS) $(GLIBS) -L$(LIB) -lHtoMuMuAnalysis -o $@ $<
 
 $(OBJ)%$(OBJSuf): $(SRC)%$(SRCSuf)
 	$(CXX) -c $(CXXFLAGS) -o $@ $< 

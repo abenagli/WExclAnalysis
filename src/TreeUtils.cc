@@ -50,17 +50,34 @@ void InitTreeVars(TChain* chain_reco, TChain* chain_gen, TreeVars& treeVars)
   treeVars.muons_pfIsoPU = new std::vector<float>;
   treeVars.muons_trackerLayersWithMeasurement = new std::vector<int>;
   
-  treeVars.pfCandidates_pt = new std::vector<float>;
-  treeVars.pfCandidates_eta = new std::vector<float>;
-  treeVars.pfCandidates_phi = new std::vector<float>;
-  treeVars.pfCandidates_energy = new std::vector<float>;
-  treeVars.pfCandidates_dxy = new std::vector<float>;
-  treeVars.pfCandidates_dz = new std::vector<float>;
-  treeVars.pfCandidates_charge = new std::vector<int>;
-  treeVars.pfCandidates_pdgId = new std::vector<int>;
-  treeVars.pfCandidates_fromPV = new std::vector<int>;
-  treeVars.pfCandidates_pvAssociationQuality = new std::vector<int>;
-  treeVars.pfCandidates_isHighPurity = new std::vector<int>;
+  treeVars.jets_pt = new std::vector<float>;
+  treeVars.jets_eta = new std::vector<float>;
+  treeVars.jets_phi = new std::vector<float>;
+  treeVars.jets_energy = new std::vector<float>;
+  treeVars.jets_charge = new std::vector<int>;
+  treeVars.jets_NHF = new std::vector<float>;
+  treeVars.jets_NEMF = new std::vector<float>;
+  treeVars.jets_CHF = new std::vector<float>;
+  treeVars.jets_MUF = new std::vector<float>;
+  treeVars.jets_CEMF = new std::vector<float>;
+  treeVars.jets_CM = new std::vector<int>;
+  treeVars.jets_NM = new std::vector<int>;
+  treeVars.jets_bTag = new std::vector<std::vector<float> >;
+  
+  treeVars.jets_puppi_pt = new std::vector<float>;
+  treeVars.jets_puppi_eta = new std::vector<float>;
+  treeVars.jets_puppi_phi = new std::vector<float>;
+  treeVars.jets_puppi_energy = new std::vector<float>;
+  treeVars.jets_puppi_charge = new std::vector<int>;
+  treeVars.jets_puppi_bTag = new std::vector<std::vector<float> >;
+  treeVars.jets_puppi_NHF = new std::vector<float>;
+  treeVars.jets_puppi_NEMF = new std::vector<float>;
+  treeVars.jets_puppi_CHF = new std::vector<float>;
+  treeVars.jets_puppi_MUF = new std::vector<float>;
+  treeVars.jets_puppi_CEMF = new std::vector<float>;
+  treeVars.jets_puppi_CM = new std::vector<int>;
+  treeVars.jets_puppi_NM = new std::vector<int>;
+  treeVars.jets_puppi_bTag = new std::vector<std::vector<float> >;
   
   //tree -> SetBranchStatus("*",0);
   
@@ -88,16 +105,23 @@ void InitTreeVars(TChain* chain_reco, TChain* chain_gen, TreeVars& treeVars)
     chain_gen -> SetBranchStatus("resoDau2_energy",1); chain_gen -> SetBranchAddress("resoDau2_energy",&treeVars.resoDau2_energy);
     chain_gen -> SetBranchStatus("resoDau2_charge",1); chain_gen -> SetBranchAddress("resoDau2_charge",&treeVars.resoDau2_charge);
     chain_gen -> SetBranchStatus("resoDau2_pdgId", 1); chain_gen -> SetBranchAddress("resoDau2_pdgId", &treeVars.resoDau2_pdgId);
+    
+    chain_gen -> SetBranchStatus("trueNumInteractions", 1); chain_gen -> SetBranchAddress("trueNumInteractions", &treeVars.trueNumInteractions);
   }
 
   if( chain_reco != NULL )
   {
-    chain_reco -> SetBranchStatus("trgs_n",       1); chain_reco -> SetBranchAddress("trgs_n",       &treeVars.trgs_n);
+    chain_reco -> SetBranchStatus("vtxs_n",1); chain_reco -> SetBranchAddress("vtxs_n",&treeVars.vtxs_n);
+    
+    chain_reco -> SetBranchStatus("rho_all",             1); chain_reco -> SetBranchAddress("rho_all",             &treeVars.rho_all);
+    chain_reco -> SetBranchStatus("rho_central",         1); chain_reco -> SetBranchAddress("rho_central",         &treeVars.rho_central);
+    chain_reco -> SetBranchStatus("rho_centralNeutral",  1); chain_reco -> SetBranchAddress("rho_centralNeutral",  &treeVars.rho_centralNeutral);
+    chain_reco -> SetBranchStatus("rho_centralChargedPU",1); chain_reco -> SetBranchAddress("rho_centralChargedPU",&treeVars.rho_centralChargedPU);
+    
     chain_reco -> SetBranchStatus("trgs_name",    1); chain_reco -> SetBranchAddress("trgs_name",    &treeVars.trgs_name);
     chain_reco -> SetBranchStatus("trgs_pass",    1); chain_reco -> SetBranchAddress("trgs_pass",    &treeVars.trgs_pass);
     chain_reco -> SetBranchStatus("trgs_prescale",1); chain_reco -> SetBranchAddress("trgs_prescale",&treeVars.trgs_prescale);
     
-    chain_reco -> SetBranchStatus("muons_n",       1); chain_reco -> SetBranchAddress("muons_n",       &treeVars.muons_n);
     chain_reco -> SetBranchStatus("muons_pt",      1); chain_reco -> SetBranchAddress("muons_pt",      &treeVars.muons_pt);
     chain_reco -> SetBranchStatus("muons_eta",     1); chain_reco -> SetBranchAddress("muons_eta",     &treeVars.muons_eta);
     chain_reco -> SetBranchStatus("muons_phi",     1); chain_reco -> SetBranchAddress("muons_phi",     &treeVars.muons_phi);
@@ -117,17 +141,38 @@ void InitTreeVars(TChain* chain_reco, TChain* chain_gen, TreeVars& treeVars)
     chain_reco -> SetBranchStatus("muons_pfIsoPU",             1); chain_reco -> SetBranchAddress("muons_pfIsoPU",             &treeVars.muons_pfIsoPU);
     chain_reco -> SetBranchStatus("muons_trackerLayersWithMeasurement",1); chain_reco -> SetBranchAddress("muons_trackerLayersWithMeasurement",&treeVars.muons_trackerLayersWithMeasurement);
     
-    chain_reco -> SetBranchStatus("pfCandidates_n",     1); chain_reco -> SetBranchAddress("pfCandidates_n",     &treeVars.pfCandidates_n);
-    chain_reco -> SetBranchStatus("pfCandidates_pt",    1); chain_reco -> SetBranchAddress("pfCandidates_pt",    &treeVars.pfCandidates_pt);
-    chain_reco -> SetBranchStatus("pfCandidates_eta",   1); chain_reco -> SetBranchAddress("pfCandidates_eta",   &treeVars.pfCandidates_eta);
-    chain_reco -> SetBranchStatus("pfCandidates_phi",   1); chain_reco -> SetBranchAddress("pfCandidates_phi",   &treeVars.pfCandidates_phi);
-    chain_reco -> SetBranchStatus("pfCandidates_energy",1); chain_reco -> SetBranchAddress("pfCandidates_energy",&treeVars.pfCandidates_energy);
-    chain_reco -> SetBranchStatus("pfCandidates_charge",1); chain_reco -> SetBranchAddress("pfCandidates_charge",&treeVars.pfCandidates_charge);
-    chain_reco -> SetBranchStatus("pfCandidates_dxy",   1); chain_reco -> SetBranchAddress("pfCandidates_dxy",   &treeVars.pfCandidates_dxy);
-    chain_reco -> SetBranchStatus("pfCandidates_dz",    1); chain_reco -> SetBranchAddress("pfCandidates_dz",    &treeVars.pfCandidates_dz);
-    chain_reco -> SetBranchStatus("pfCandidates_pdgId", 1); chain_reco -> SetBranchAddress("pfCandidates_pdgId", &treeVars.pfCandidates_pdgId);
-    chain_reco -> SetBranchStatus("pfCandidates_fromPV",1); chain_reco -> SetBranchAddress("pfCandidates_fromPV", &treeVars.pfCandidates_fromPV);
-    chain_reco -> SetBranchStatus("pfCandidates_pvAssociationQuality",1); chain_reco -> SetBranchAddress("pfCandidates_pvAssociationQuality", &treeVars.pfCandidates_pvAssociationQuality);
-    chain_reco -> SetBranchStatus("pfCandidates_isHighPurity",1); chain_reco -> SetBranchAddress("pfCandidates_isHighPurity", &treeVars.pfCandidates_isHighPurity);
+    chain_reco -> SetBranchStatus("jets_pt",      1); chain_reco -> SetBranchAddress("jets_pt",      &treeVars.jets_pt);
+    chain_reco -> SetBranchStatus("jets_eta",     1); chain_reco -> SetBranchAddress("jets_eta",     &treeVars.jets_eta);
+    chain_reco -> SetBranchStatus("jets_phi",     1); chain_reco -> SetBranchAddress("jets_phi",     &treeVars.jets_phi);
+    chain_reco -> SetBranchStatus("jets_energy",  1); chain_reco -> SetBranchAddress("jets_energy",  &treeVars.jets_energy);
+    chain_reco -> SetBranchStatus("jets_charge",  1); chain_reco -> SetBranchAddress("jets_charge",  &treeVars.jets_charge);
+    chain_reco -> SetBranchStatus("jets_NHF",     1); chain_reco -> SetBranchAddress("jets_NHF",     &treeVars.jets_NHF);
+    chain_reco -> SetBranchStatus("jets_NEMF",    1); chain_reco -> SetBranchAddress("jets_NEMF",    &treeVars.jets_NEMF);
+    chain_reco -> SetBranchStatus("jets_CHF",     1); chain_reco -> SetBranchAddress("jets_CHF",     &treeVars.jets_CHF);
+    chain_reco -> SetBranchStatus("jets_MUF",     1); chain_reco -> SetBranchAddress("jets_MUF",     &treeVars.jets_MUF);
+    chain_reco -> SetBranchStatus("jets_CEMF",    1); chain_reco -> SetBranchAddress("jets_CEMF",    &treeVars.jets_CEMF);
+    chain_reco -> SetBranchStatus("jets_CM",      1); chain_reco -> SetBranchAddress("jets_CM",      &treeVars.jets_CM);
+    chain_reco -> SetBranchStatus("jets_bTag",    1); chain_reco -> SetBranchAddress("jets_bTag",    &treeVars.jets_bTag);
+    
+    chain_reco -> SetBranchStatus("jets_puppi_pt",      1); chain_reco -> SetBranchAddress("jets_puppi_pt",      &treeVars.jets_puppi_pt);
+    chain_reco -> SetBranchStatus("jets_puppi_eta",     1); chain_reco -> SetBranchAddress("jets_puppi_eta",     &treeVars.jets_puppi_eta);
+    chain_reco -> SetBranchStatus("jets_puppi_phi",     1); chain_reco -> SetBranchAddress("jets_puppi_phi",     &treeVars.jets_puppi_phi);
+    chain_reco -> SetBranchStatus("jets_puppi_energy",  1); chain_reco -> SetBranchAddress("jets_puppi_energy",  &treeVars.jets_puppi_energy);
+    chain_reco -> SetBranchStatus("jets_puppi_charge",  1); chain_reco -> SetBranchAddress("jets_puppi_charge",  &treeVars.jets_puppi_charge);
+    chain_reco -> SetBranchStatus("jets_puppi_NHF",     1); chain_reco -> SetBranchAddress("jets_puppi_NHF",     &treeVars.jets_puppi_NHF);
+    chain_reco -> SetBranchStatus("jets_puppi_NEMF",    1); chain_reco -> SetBranchAddress("jets_puppi_NEMF",    &treeVars.jets_puppi_NEMF);
+    chain_reco -> SetBranchStatus("jets_puppi_CHF",     1); chain_reco -> SetBranchAddress("jets_puppi_CHF",     &treeVars.jets_puppi_CHF);
+    chain_reco -> SetBranchStatus("jets_puppi_MUF",     1); chain_reco -> SetBranchAddress("jets_puppi_MUF",     &treeVars.jets_puppi_MUF);
+    chain_reco -> SetBranchStatus("jets_puppi_CEMF",    1); chain_reco -> SetBranchAddress("jets_puppi_CEMF",    &treeVars.jets_puppi_CEMF);
+    chain_reco -> SetBranchStatus("jets_puppi_CM",      1); chain_reco -> SetBranchAddress("jets_puppi_CM",      &treeVars.jets_puppi_CM);
+    chain_reco -> SetBranchStatus("jets_puppi_bTag",    1); chain_reco -> SetBranchAddress("jets_puppi_bTag",    &treeVars.jets_puppi_bTag);
+    
+    chain_reco -> SetBranchStatus("met_pt", 1); chain_reco -> SetBranchAddress("met_pt", &treeVars.met_pt);
+    chain_reco -> SetBranchStatus("met_phi",1); chain_reco -> SetBranchAddress("met_phi",&treeVars.met_phi);
+    chain_reco -> SetBranchStatus("met_sig",1); chain_reco -> SetBranchAddress("met_sig",&treeVars.met_sig);
+    
+    chain_reco -> SetBranchStatus("met_puppi_pt", 1); chain_reco -> SetBranchAddress("met_puppi_pt", &treeVars.met_puppi_pt);
+    chain_reco -> SetBranchStatus("met_puppi_phi",1); chain_reco -> SetBranchAddress("met_puppi_phi",&treeVars.met_puppi_phi);
+    chain_reco -> SetBranchStatus("met_puppi_sig",1); chain_reco -> SetBranchAddress("met_puppi_sig",&treeVars.met_puppi_sig);
   }
 }
