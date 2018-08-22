@@ -1,0 +1,3 @@
+/eos/cms//store/user/abenagli//HMUMU/ntuples/data_2016_v1/SingleMuon/HtoMuMu_ntuples_v1/180326_104446/0000/ntuple_21.root
+/eos/cms//store/user/abenagli//HMUMU/ntuples/data_2016_v1/SingleMuon/HtoMuMu_ntuples_v1/180326_104446/0000/ntuple_688.root
+/eos/cms//store/user/abenagli//HMUMU/ntuples/data_2016_v1/SingleMuon/HtoMuMu_ntuples_v1/180326_104446/0001/ntuple_1658.root

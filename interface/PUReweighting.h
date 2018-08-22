@@ -12,7 +12,7 @@ public:
   PUReweighting(TH1F* h_pileup_data, TH1F* h_pileup_mc);
   ~PUReweighting();
   
-  float GetPUWeight(const int& trueNumInteractions);
+  float GetPUWeight(const float& trueNumInteractions);
   
   TH1F* GetWeightsHistogram();
   

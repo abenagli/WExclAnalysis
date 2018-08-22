@@ -12,6 +12,8 @@
   DATA(float, weight)                 \
   DATA(float, weight_PU)              \
   DATA(float, weight_MC)              \
+  DATA(int,   vtxs_n)                 \
+  DATA(float, rho_all)                \
   DATA(float, H_pt)                   \
   DATA(float, H_eta)                  \
   DATA(float, H_phi)                  \
@@ -41,36 +43,43 @@
   DATA(float, mu_Deta)                \
   DATA(float, mu_Dphi)                \
   DATA(float, mu_DR)                  \
-  DATA(int, jets_20GeV_n)             \
-  DATA(int, jets_25GeV_n)             \
-  DATA(int, jets_30GeV_n)             \
-  DATA(int, jets_20GeV_bTagL_n)       \
-  DATA(int, jets_25GeV_bTagL_n)       \
-  DATA(int, jets_30GeV_bTagL_n)       \
-  DATA(int, jets_20GeV_bTagM_n)       \
-  DATA(int, jets_25GeV_bTagM_n)       \
-  DATA(int, jets_30GeV_bTagM_n)       \
-  DATA(int, jets_20GeV_bTagT_n)       \
-  DATA(int, jets_25GeV_bTagT_n)       \
-  DATA(int, jets_30GeV_bTagT_n)       \
-  DATA(int, jets_puppi_20GeV_n)       \
-  DATA(int, jets_puppi_25GeV_n)       \
-  DATA(int, jets_puppi_30GeV_n)       \
-  DATA(int, jets_puppi_20GeV_bTagL_n) \
-  DATA(int, jets_puppi_25GeV_bTagL_n) \
-  DATA(int, jets_puppi_30GeV_bTagL_n) \
-  DATA(int, jets_puppi_20GeV_bTagM_n) \
-  DATA(int, jets_puppi_25GeV_bTagM_n) \
-  DATA(int, jets_puppi_30GeV_bTagM_n) \
-  DATA(int, jets_puppi_20GeV_bTagT_n) \
-  DATA(int, jets_puppi_25GeV_bTagT_n) \
-  DATA(int, jets_puppi_30GeV_bTagT_n) \
+  DATA(int, jets_all_n)               \
+  DATA(int, jets_all_bTagL_n)         \
+  DATA(int, jets_all_bTagM_n)         \
+  DATA(int, jets_all_bTagT_n)         \
+  DATA(int, jets_cen_n)               \
+  DATA(int, jets_cen_bTagL_n)         \
+  DATA(int, jets_cen_bTagM_n)         \
+  DATA(int, jets_cen_bTagT_n)         \
+  DATA(int, jets_fwd_n)               \
+  DATA(int, jets_fwd_bTagL_n)         \
+  DATA(int, jets_fwd_bTagM_n)         \
+  DATA(int, jets_fwd_bTagT_n)         \
+  DATA(float, jet1_all_pt)            \
+  DATA(float, jet1_all_eta)           \
+  DATA(float, jet1_all_phi)           \
+  DATA(float, jet1_all_energy)        \
+  DATA(float, jet2_all_pt)            \
+  DATA(float, jet2_all_eta)           \
+  DATA(float, jet2_all_phi)           \
+  DATA(float, jet2_all_energy)        \
+  DATA(float, jet_all_Deta)           \
+  DATA(float, jet_all_Dphi)           \
+  DATA(float, jet_all_mass)           \
+  DATA(float, jet1_cen_pt)            \
+  DATA(float, jet1_cen_eta)           \
+  DATA(float, jet1_cen_phi)           \
+  DATA(float, jet1_cen_energy)        \
+  DATA(float, jet2_cen_pt)            \
+  DATA(float, jet2_cen_eta)           \
+  DATA(float, jet2_cen_phi)           \
+  DATA(float, jet2_cen_energy)        \
+  DATA(float, jet_cen_Deta)           \
+  DATA(float, jet_cen_Dphi)           \
+  DATA(float, jet_cen_mass)           \
   DATA(float, met_pt)                 \
   DATA(float, met_phi)                \
-  DATA(float, met_sig)                \
-  DATA(float, met_puppi_pt)           \
-  DATA(float, met_puppi_phi)          \
-  DATA(float, met_puppi_sig)
+  DATA(float, met_sig)
 
 #include "DynamicTTree/interface/DynamicTTreeInterface.h"
 

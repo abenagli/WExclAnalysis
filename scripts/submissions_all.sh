@@ -1,3 +1,7 @@
+~/bin/splitGenericJobsOnLxplus_byFiles.py -l data_SingleMuon -b /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis -e bin/hmumu_analysis.exe -i /eos/cms/store/user/abenagli/HMUMU/ntuples/data_2016_v1/SingleMuon/HtoMuMu_ntuples_v1/ -o /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis/plots -f plots -c cfg/analysis_data_SingleMuon.cfg -n 100 -q 8nh -s
+
+
+
 ~/bin/splitGenericJobsOnLxplus_byFiles.py -l mc_DY -b /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis -e bin/hmumu_analysis.exe -i /eos/cms//store/user/abenagli//HMUMU/ntuples/mc_2016_v3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/HtoMuMu_ntuples_v1/ -o /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis/plots -f plots -c cfg/analysis_mc_DY.cfg -n 146 -q 8nh -s
 
 ~/bin/splitGenericJobsOnLxplus_byFiles.py -l mc_tt -b /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis -e bin/hmumu_analysis.exe -i /eos/cms//store/user/abenagli//HMUMU/ntuples/mc_2016_v3/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/HtoMuMu_ntuples_v1/ -o /afs/cern.ch/work/a/abenagli/HMuMu/HtoMuMuAnalysis/plots -f plots -c cfg/analysis_mc_tt.cfg -n 44 -q 8nh -s

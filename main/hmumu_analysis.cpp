@@ -23,6 +23,7 @@
 #include "TLorentzVector.h"
 #include "TGraph.h"
 #include "TLegend.h"
+#include "TDirectory.h"
 
 
 
@@ -33,7 +34,8 @@ int main(int argc, char** argv)
     std::cerr << ">>>>> hmumu_analysis.cpp::usage:   " << argv[0] << " configFileName   [default=0/debug=1]" << std::endl;
     return -1;
   }
-
+  TDirectory* baseDir = gDirectory;
+  
   
   //----------------------
   // parse the config file
@@ -45,7 +47,9 @@ int main(int argc, char** argv)
   
   //--- open files and get trees
   int isData = opts.GetOpt<int>("Input.isData");
+  int isSignal = opts.GetOpt<int>("Input.isSignal");
   std::string inputFileList = opts.GetOpt<std::string>("Input.inputFileList");
+  std::string inputFileListPU = opts.GetOpt<std::string>("Input.inputFileListPU");
   
   TChain* chain_reco = new TChain("DumpReco/reco_tree","DumpReco/reco_tree");
   TChain* chain_gen = NULL; if( !isData ) chain_gen = new TChain("DumpGenParticles/gen_tree","DumpGenParticles/gen_tree");
@@ -134,8 +138,7 @@ int main(int argc, char** argv)
   //----------------------
   //--- pileup reweighting
   PUReweighting* puReweighting = NULL;
-  list.clear();
-  list.seekg(0,std::ios::beg);
+  std::ifstream listPU(inputFileListPU.c_str(),std::ios::in);
   if( !isData )
   {
     std::string pileupFileName_data = opts.GetOpt<std::string>("Weights.pileupFileName_data");
@@ -145,17 +148,20 @@ int main(int argc, char** argv)
     TH1F* pileup_mc = NULL;
     while(1)
     {
-      getline(list,fileName,'\n');
-      if( !list.good() ) break;
+      getline(listPU,fileName,'\n');
+      if( !listPU.good() ) break;
       
-      TFile* tempInFile = TFile::Open(fileName.c_str(),"READ");
+      TFile* tempInFile = TFile::Open(("root://eoscms/"+fileName).c_str(),"READ");
       TH1F* tempHisto = (TH1F*)( tempInFile->Get("DumpPU/pileup") );
       
       if( pileup_mc == NULL )
+      {
+        baseDir -> cd();
         pileup_mc = new TH1F("pileup","",tempHisto->GetNbinsX(),tempHisto->GetBinLowEdge(1),tempHisto->GetBinLowEdge(tempHisto->GetNbinsX()+tempHisto->GetBinWidth(tempHisto->GetNbinsX())));
+      }
       pileup_mc -> Add(tempHisto);
       
-      // tempInFile -> Close();
+      tempInFile -> Close();
     }
     puReweighting = new PUReweighting(pileup_data,pileup_mc);
     TH1F* pileup_weights = puReweighting -> GetWeightsHistogram();
@@ -198,7 +204,7 @@ int main(int argc, char** argv)
   int nEvents_selected = 0;
   int nEvents_selected_recoGenMatch = 0;
   
-  //for(int entry = 0; entry < 100; ++entry)
+  // for(int entry = 0; entry < 1000; ++entry)
   for(int entry = 0; entry < chain_reco->GetEntries(); ++entry)
   {
     if( !debugMode && entry%100 == 0 ) std::cout << ">>> loop 1/1: reading entry " << entry << " / " << nEntries_recoTree << "\r" << std::flush;
@@ -265,7 +271,7 @@ int main(int argc, char** argv)
     //---------------------
     //--- retrieve gen info
     if( debugMode ) std::cout << ">>>>>> start retrieve gen info" << std::endl;
-    if( !isData )
+    if( isSignal )
     {
       gen_H.v.SetPtEtaPhiE(treeVars.reso_pt->at(0),treeVars.reso_eta->at(0),treeVars.reso_phi->at(0),treeVars.reso_energy->at(0));
       gen_H.charge = treeVars.reso_charge->at(0);
@@ -423,6 +429,7 @@ int main(int argc, char** argv)
     bool trgPassOne = false;
     for(unsigned int ii = 0; ii < treeVars.trgs_name->size(); ++ii)
     {
+      // std::cout << "HLT name: " << treeVars.trgs_name->at(ii) << "   pass: " << treeVars.trgs_pass->at(ii) << "    prescale: " << treeVars.trgs_prescale->at(ii) << std::endl;
       for(unsigned int jj = 0; jj < reco_HLT_paths.size(); ++jj)
       {
         std::size_t found = treeVars.trgs_name->at(ii).find( reco_HLT_paths.at(jj) );
@@ -481,7 +488,6 @@ int main(int argc, char** argv)
       if( treeVars.muons_isLoose->at(temp_mu.at(ii).it) != 1 ) continue;
       if( fabs(treeVars.muons_dxy->at(temp_mu.at(ii).it)) > 0.05 ) continue;
       if( fabs(treeVars.muons_dz->at(temp_mu.at(ii).it))  > 0.10 ) continue;
-      // if( DeltaEta(temp_mu.at(ii).v.Eta(),reco_mu.at(0).v.Eta()) > 0.5 ) continue;
       
       mu2_iso = treeVars.muons_pfIsoChargedHadron->at(temp_mu.at(ii).it) +
         std::max(0.,treeVars.muons_pfIsoNeutralHadron->at(temp_mu.at(ii).it)+treeVars.muons_pfIsoPhoton->at(temp_mu.at(ii).it)-0.5*treeVars.muons_pfIsoPU->at(temp_mu.at(ii).it));
@@ -501,7 +507,7 @@ int main(int argc, char** argv)
     
     if( debugMode ) std::cout << ">>>>>> start reco mu genMatch" << std::endl;
     bool reco_mu_genMatch = false;
-    if( !isData )
+    if( isSignal )
       reco_mu_genMatch = IsMatching(reco_mu,gen_mu,0.01,0.1,false);
     
     ++nEvents_selected;
@@ -536,104 +542,104 @@ int main(int argc, char** argv)
     // jets
     if( debugMode ) std::cout << ">>>>>> start jets" << std::endl;
     
-    int jets_20GeV_n = 0;
-    int jets_25GeV_n = 0;
-    int jets_30GeV_n = 0;
-    int jets_20GeV_bTagL_n = 0;
-    int jets_25GeV_bTagL_n = 0;
-    int jets_30GeV_bTagL_n = 0;
-    int jets_20GeV_bTagM_n = 0;
-    int jets_25GeV_bTagM_n = 0;
-    int jets_30GeV_bTagM_n = 0;
-    int jets_20GeV_bTagT_n = 0;
-    int jets_25GeV_bTagT_n = 0;
-    int jets_30GeV_bTagT_n = 0;
+    int jets_all_n = 0;
+    int jets_all_bTagL_n = 0;
+    int jets_all_bTagM_n = 0;
+    int jets_all_bTagT_n = 0;
+    int jets_cen_n = 0;
+    int jets_cen_bTagL_n = 0;
+    int jets_cen_bTagM_n = 0;
+    int jets_cen_bTagT_n = 0;
+    int jets_fwd_n = 0;
+    int jets_fwd_bTagL_n = 0;
+    int jets_fwd_bTagM_n = 0;
+    int jets_fwd_bTagT_n = 0;
+    
+    int jetId1_all = -1;
+    int jetId2_all = -1;
+    int jetId1_cen = -1;
+    int jetId2_cen = -1;
     for(unsigned int ii = 0; ii < treeVars.jets_pt->size(); ++ii)
     {
-      if( treeVars.jets_pt->at(ii) < 20. ) continue;
-      if( fabs(treeVars.jets_eta->at(ii)) > 3.0 ) continue;
+      if( treeVars.jets_pt->at(ii) < 30. ) continue;
+      if( fabs(treeVars.jets_eta->at(ii)) > 4.7 ) continue;
       
       bool skipJet = false;
+      
       for(unsigned int jj = 0; jj < reco_mu.size(); ++jj)
-        if( DeltaR(treeVars.jets_eta->at(ii),treeVars.jets_phi->at(ii),reco_mu.at(jj).v.Eta(),reco_mu.at(jj).v.Phi()) < 0.4 ) { skipJet = true; break; }
+        if( DeltaR(treeVars.jets_eta->at(ii),treeVars.jets_phi->at(ii),reco_mu.at(jj).v.Eta(),reco_mu.at(jj).v.Phi()) < 0.4 ) skipJet = true;
+      
+      if( fabs(treeVars.jets_eta->at(ii)) <= 2.7 )
+      {
+        if( treeVars.jets_NHF->at(ii)  >= 0.90 ) skipJet = true;
+        if( treeVars.jets_NEMF->at(ii) >= 0.90 ) skipJet = true;
+        if( treeVars.jets_MUF->at(ii)  >= 0.80 ) skipJet = true;
+        if( (treeVars.jets_CM->at(ii)+treeVars.jets_NM->at(ii)) <= 1 ) skipJet = true;
+      }
+      
+      if( fabs(treeVars.jets_eta->at(ii)) <= 2.4 )
+      {
+        if( treeVars.jets_CHF->at(ii)  <= 0.   ) skipJet = true;
+        if( treeVars.jets_CM->at(ii)   <= 0    ) skipJet = true;
+        if( treeVars.jets_CEMF->at(ii) >= 0.90 ) skipJet = true;
+      }
+      
+      if( fabs(treeVars.jets_eta->at(ii)) >  2.7 &&
+          fabs(treeVars.jets_eta->at(ii)) <= 3.0 )
+      {
+        if( treeVars.jets_NEMF->at(ii) <= 0.01 ) skipJet = true;
+        if( treeVars.jets_NHF->at(ii)  >= 0.98 ) skipJet = true;
+        if( treeVars.jets_NM->at(ii)   <= 1    ) skipJet = true;
+      }
+      
+      if( fabs(treeVars.jets_eta->at(ii)) > 3.0 )
+      {
+        if( treeVars.jets_NEMF->at(ii) >= 0.90 ) skipJet = true;
+        if( treeVars.jets_NM->at(ii)   <= 10   ) skipJet = true;
+      }
+      
       if( skipJet ) continue;
       
-      if( treeVars.jets_pt->at(ii) >= 20. )
+      
+      ++jets_all_n;
+      if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_all_bTagL_n;
+      if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_all_bTagM_n;
+      if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_all_bTagT_n;
+      
+      if( fabs(treeVars.jets_eta->at(ii)) <= 2.4 )
       {
-        ++jets_20GeV_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_20GeV_bTagL_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_20GeV_bTagM_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_20GeV_bTagT_n;
+        ++jets_cen_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_cen_bTagL_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_cen_bTagM_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_cen_bTagT_n;
       }
-      if( treeVars.jets_pt->at(ii) >= 25. )
+      else
       {
-        ++jets_25GeV_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_25GeV_bTagL_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_25GeV_bTagM_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_25GeV_bTagT_n;
+        ++jets_fwd_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_fwd_bTagL_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_fwd_bTagM_n;
+        if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_fwd_bTagT_n;
       }
-      if( treeVars.jets_pt->at(ii) >= 30. )
+      
+      if( jetId1_all != -1 && jetId2_all == -1 ) jetId2_all = ii;
+      if( jetId1_all == -1 ) jetId1_all = ii;
+      
+      if( fabs(treeVars.jets_eta->at(ii)) <= 2.4 )
       {
-        ++jets_30GeV_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.460 ) ++jets_30GeV_bTagL_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.800 ) ++jets_30GeV_bTagM_n;
-        if( treeVars.jets_bTag->at(ii).at(0) > 0.935 ) ++jets_30GeV_bTagT_n;
+        if( jetId1_cen != -1 && jetId2_cen == -1 ) jetId2_cen = ii;
+        if( jetId1_cen == -1 ) jetId1_cen = ii;
       }
     }
     if( debugMode ) std::cout << ">>>>>> end jets" << std::endl;
-    
-    if( debugMode ) std::cout << ">>>>>> start puppi jets" << std::endl;
-    int jets_puppi_20GeV_n = 0;
-    int jets_puppi_25GeV_n = 0;
-    int jets_puppi_30GeV_n = 0;
-    int jets_puppi_20GeV_bTagL_n = 0;
-    int jets_puppi_25GeV_bTagL_n = 0;
-    int jets_puppi_30GeV_bTagL_n = 0;
-    int jets_puppi_20GeV_bTagM_n = 0;
-    int jets_puppi_25GeV_bTagM_n = 0;
-    int jets_puppi_30GeV_bTagM_n = 0;
-    int jets_puppi_20GeV_bTagT_n = 0;
-    int jets_puppi_25GeV_bTagT_n = 0;
-    int jets_puppi_30GeV_bTagT_n = 0;
-    for(unsigned int ii = 0; ii < treeVars.jets_puppi_pt->size(); ++ii)
-    {
-      if( treeVars.jets_puppi_pt->at(ii) < 20. ) continue;
-      if( fabs(treeVars.jets_puppi_eta->at(ii)) > 3.0 ) continue;
-      
-      bool skipJet = false;
-      for(unsigned int jj = 0; jj < reco_mu.size(); ++jj)
-        if( DeltaR(treeVars.jets_puppi_eta->at(ii),treeVars.jets_puppi_phi->at(ii),reco_mu.at(jj).v.Eta(),reco_mu.at(jj).v.Phi()) < 0.4 ) { skipJet = true; break; }
-      if( skipJet ) continue;
-      
-      if( treeVars.jets_puppi_pt->at(ii) >= 20. )
-      {
-        ++jets_puppi_20GeV_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_20GeV_bTagL_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_20GeV_bTagM_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_20GeV_bTagT_n;
-      }
-      if( treeVars.jets_puppi_pt->at(ii) >= 25. )
-      {
-        ++jets_puppi_25GeV_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_25GeV_bTagL_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_25GeV_bTagM_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_25GeV_bTagT_n;
-      }
-      if( treeVars.jets_puppi_pt->at(ii) >= 30. )
-      {
-        ++jets_puppi_30GeV_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_30GeV_bTagL_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_30GeV_bTagM_n;
-        if( treeVars.jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_30GeV_bTagT_n;
-      }
-    }
-    if( debugMode ) std::cout << ">>>>>> end puppi jets" << std::endl;    
     
     
     
     //---------------------------
     //--- fill out tree variables
     if( debugMode ) std::cout << ">>>>>> start filling out tree" << std::endl;
+    outTree.vtxs_n = treeVars.vtxs_n;
+    outTree.rho_all = treeVars.rho_all;
+    
     outTree.mu1_pt = reco_mu.at(0).v.Pt();
     outTree.mu2_pt = reco_mu.at(1).v.Pt();
     outTree.mu1_eta = reco_mu.at(0).v.Eta();
@@ -665,39 +671,124 @@ int main(int argc, char** argv)
     outTree.H_phi = reco_H.v.Phi();
     outTree.H_mass = reco_H.v.M();
     
-    outTree.jets_20GeV_n = jets_20GeV_n;
-    outTree.jets_25GeV_n = jets_25GeV_n;
-    outTree.jets_30GeV_n = jets_30GeV_n;
-    outTree.jets_20GeV_bTagL_n = jets_20GeV_bTagL_n;
-    outTree.jets_25GeV_bTagL_n = jets_25GeV_bTagL_n;
-    outTree.jets_30GeV_bTagL_n = jets_30GeV_bTagL_n;
-    outTree.jets_20GeV_bTagM_n = jets_20GeV_bTagM_n;
-    outTree.jets_25GeV_bTagM_n = jets_25GeV_bTagM_n;
-    outTree.jets_30GeV_bTagM_n = jets_30GeV_bTagM_n;
-    outTree.jets_20GeV_bTagT_n = jets_20GeV_bTagT_n;
-    outTree.jets_25GeV_bTagT_n = jets_25GeV_bTagT_n;
-    outTree.jets_30GeV_bTagT_n = jets_30GeV_bTagT_n;
+    outTree.jets_all_n = jets_all_n;
+    outTree.jets_all_bTagL_n = jets_all_bTagL_n;
+    outTree.jets_all_bTagM_n = jets_all_bTagM_n;
+    outTree.jets_all_bTagT_n = jets_all_bTagT_n;
+    outTree.jets_cen_n = jets_cen_n;
+    outTree.jets_cen_bTagL_n = jets_cen_bTagL_n;
+    outTree.jets_cen_bTagM_n = jets_cen_bTagM_n;
+    outTree.jets_cen_bTagT_n = jets_cen_bTagT_n;
+    outTree.jets_fwd_n = jets_fwd_n;
+    outTree.jets_fwd_bTagL_n = jets_fwd_bTagL_n;
+    outTree.jets_fwd_bTagM_n = jets_fwd_bTagM_n;
+    outTree.jets_fwd_bTagT_n = jets_fwd_bTagT_n;
     
-    outTree.jets_puppi_20GeV_n = jets_puppi_20GeV_n;
-    outTree.jets_puppi_25GeV_n = jets_puppi_25GeV_n;
-    outTree.jets_puppi_30GeV_n = jets_puppi_30GeV_n;
-    outTree.jets_puppi_20GeV_bTagL_n = jets_puppi_20GeV_bTagL_n;
-    outTree.jets_puppi_25GeV_bTagL_n = jets_puppi_25GeV_bTagL_n;
-    outTree.jets_puppi_30GeV_bTagL_n = jets_puppi_30GeV_bTagL_n;
-    outTree.jets_puppi_20GeV_bTagM_n = jets_puppi_20GeV_bTagM_n;
-    outTree.jets_puppi_25GeV_bTagM_n = jets_puppi_25GeV_bTagM_n;
-    outTree.jets_puppi_30GeV_bTagM_n = jets_puppi_30GeV_bTagM_n;
-    outTree.jets_puppi_20GeV_bTagT_n = jets_puppi_20GeV_bTagT_n;
-    outTree.jets_puppi_25GeV_bTagT_n = jets_puppi_25GeV_bTagT_n;
-    outTree.jets_puppi_30GeV_bTagT_n = jets_puppi_30GeV_bTagT_n;
+    TLorentzVector jet1_all;
+    if( jetId1_all >= 0 )
+    {
+      jet1_all.SetPtEtaPhiE(treeVars.jets_pt->at(jetId1_all),
+                            treeVars.jets_eta->at(jetId1_all),
+                            treeVars.jets_phi->at(jetId1_all),
+                            treeVars.jets_energy->at(jetId1_all));
+      outTree.jet1_all_pt      = treeVars.jets_pt->at(jetId1_all);
+      outTree.jet1_all_eta     = treeVars.jets_eta->at(jetId1_all);
+      outTree.jet1_all_phi     = treeVars.jets_phi->at(jetId1_all);
+      outTree.jet1_all_energy  = treeVars.jets_energy->at(jetId1_all);
+    }
+    else
+    {
+      outTree.jet1_all_pt      = -99.;
+      outTree.jet1_all_eta     = -99.;
+      outTree.jet1_all_phi     = -99.;
+      outTree.jet1_all_energy  = -99.;
+    }
+    TLorentzVector jet2_all;
+    if( jetId2_all >= 0 )
+    {
+      jet2_all.SetPtEtaPhiE(treeVars.jets_pt->at(jetId2_all),
+                            treeVars.jets_eta->at(jetId2_all),
+                            treeVars.jets_phi->at(jetId2_all),
+                            treeVars.jets_energy->at(jetId2_all));
+      outTree.jet2_all_pt      = treeVars.jets_pt->at(jetId2_all);
+      outTree.jet2_all_eta     = treeVars.jets_eta->at(jetId2_all);
+      outTree.jet2_all_phi     = treeVars.jets_phi->at(jetId2_all);
+      outTree.jet2_all_energy  = treeVars.jets_energy->at(jetId2_all);
+    }
+    else
+    {
+      outTree.jet2_all_pt      = -99.;
+      outTree.jet2_all_eta     = -99.;
+      outTree.jet2_all_phi     = -99.;
+      outTree.jet2_all_energy  = -99.;
+    }
+    if( jetId1_all >= 0 && jetId2_all >= 0 )
+    {
+      outTree.jet_all_Deta     = DeltaEta(treeVars.jets_eta->at(jetId1_all),treeVars.jets_eta->at(jetId2_all));
+      outTree.jet_all_Dphi     = DeltaPhi(treeVars.jets_phi->at(jetId1_all),treeVars.jets_phi->at(jetId2_all));
+      outTree.jet_all_mass     = (jet1_all+jet2_all).M();
+    }
+    else
+    {
+      outTree.jet_all_Deta     = -99.;
+      outTree.jet_all_Dphi     = -99.;
+      outTree.jet_all_mass     = -99.;
+    }
+    
+    TLorentzVector jet1_cen;
+    if( jetId1_cen >= 0 )
+    {
+      jet1_cen.SetPtEtaPhiE(treeVars.jets_pt->at(jetId1_cen),
+                            treeVars.jets_eta->at(jetId1_cen),
+                            treeVars.jets_phi->at(jetId1_cen),
+                            treeVars.jets_energy->at(jetId1_cen));
+      outTree.jet1_cen_pt      = treeVars.jets_pt->at(jetId1_cen);
+      outTree.jet1_cen_eta     = treeVars.jets_eta->at(jetId1_cen);
+      outTree.jet1_cen_phi     = treeVars.jets_phi->at(jetId1_cen);
+      outTree.jet1_cen_energy  = treeVars.jets_energy->at(jetId1_cen);
+    }
+    else
+    {
+      outTree.jet1_cen_pt      = -99.;
+      outTree.jet1_cen_eta     = -99.;
+      outTree.jet1_cen_phi     = -99.;
+      outTree.jet1_cen_energy  = -99.;
+    }
+    TLorentzVector jet2_cen;
+    if( jetId2_cen >= 0 )
+    {
+      jet2_cen.SetPtEtaPhiE(treeVars.jets_pt->at(jetId2_cen),
+                            treeVars.jets_eta->at(jetId2_cen),
+                            treeVars.jets_phi->at(jetId2_cen),
+                            treeVars.jets_energy->at(jetId2_cen));
+      outTree.jet2_cen_pt      = treeVars.jets_pt->at(jetId2_cen);
+      outTree.jet2_cen_eta     = treeVars.jets_eta->at(jetId2_cen);
+      outTree.jet2_cen_phi     = treeVars.jets_phi->at(jetId2_cen);
+      outTree.jet2_cen_energy  = treeVars.jets_energy->at(jetId2_cen);
+    }
+    else
+    {
+      outTree.jet2_cen_pt      = -99.;
+      outTree.jet2_cen_eta     = -99.;
+      outTree.jet2_cen_phi     = -99.;
+      outTree.jet2_cen_energy  = -99.;
+    }
+    if( jetId1_cen >= 0 && jetId2_cen >= 0 )
+    {
+      outTree.jet_cen_Deta     = DeltaEta(treeVars.jets_eta->at(jetId1_cen),treeVars.jets_eta->at(jetId2_cen));
+      outTree.jet_cen_Dphi     = DeltaPhi(treeVars.jets_phi->at(jetId1_cen),treeVars.jets_phi->at(jetId2_cen));
+      outTree.jet_cen_mass     = (jet1_cen+jet2_cen).M();
+    }
+    else
+    {
+      outTree.jet_cen_Deta     = -99.;
+      outTree.jet_cen_Dphi     = -99.;
+      outTree.jet_cen_mass     = -99.;
+    }
     
     outTree.met_pt = treeVars.met_pt;
     outTree.met_phi = treeVars.met_phi;
     outTree.met_sig = treeVars.met_sig;
-    
-    outTree.met_puppi_pt = treeVars.met_puppi_pt;
-    outTree.met_puppi_phi = treeVars.met_puppi_phi;
-    outTree.met_puppi_sig = treeVars.met_puppi_sig;
     
     outTree.weight = weight;
     outTree.weight_MC = mcWeight;
@@ -713,12 +804,12 @@ int main(int argc, char** argv)
     if( debugMode ) std::cout << ">>>>>> start print event" << std::endl;
     if( printGenEvent || printRecoGenMatchEvent || printRecoEvent )
       std::cout << "\n\n Event: " << entry << std::endl;
-    if( printGenEvent && !isData )
+    if( printGenEvent && isSignal )
     {
       std::cout << "--------------------- GEN ---------------------" << std::endl;
       PrintEvent(gen_mu);
     }
-    if( printRecoGenMatchEvent && !isData )
+    if( printRecoGenMatchEvent && isSignal )
     {
       std::cout << "--------------------- GEN MATCH ---------------------" << std::endl;
       PrintEvent(recoGenMatch_mu);
@@ -736,7 +827,7 @@ int main(int argc, char** argv)
     
     //-------------------
     //--- fill histograms
-    if( !isData )
+    if( isSignal )
       for(int ii = 0; ii < 2; ++ii)
       {
         h1_reco_mu_gen_mu_DR -> Fill( DeltaR(reco_mu.at(ii).v.Eta(),reco_mu.at(ii).v.Phi(),gen_mu.at(ii).v.Eta(),gen_mu.at(ii).v.Phi()),weight );

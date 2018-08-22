@@ -26,9 +26,19 @@ PUReweighting::~PUReweighting()
 
 
 
-float PUReweighting::GetPUWeight(const int& trueNumInteractions)
+float PUReweighting::GetPUWeight(const float& trueNumInteractions)
 {
-  return 1. / pileup_mc_[trueNumInteractions] * pileup_data_[trueNumInteractions];
+  float val = 1. / pileup_mc_[trueNumInteractions] * pileup_data_[trueNumInteractions];
+  if( isinf(val) )
+  {
+    std::cerr << "!!! PUReweighting::GetPUWeight error:" << std::endl;
+    std::cerr << "   trueNumInteractions = " << trueNumInteractions << std::endl;
+    std::cerr << "   pileup_mc_[trueNumInteractions] = " << pileup_mc_[trueNumInteractions] << std::endl;
+    std::cerr << "   pileup_data_[trueNumInteractions] = " << pileup_data_[trueNumInteractions] << std::endl;
+    std::cerr << "PUReweighting::GetPUWeight error !!!" << std::endl;
+  }
+  
+  return val;
 }
 
 

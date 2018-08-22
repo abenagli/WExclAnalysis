@@ -153,3 +153,16 @@ std::ostream& operator<<(std::ostream& os, const particle& p)
   
   return os;
 }
+
+
+
+double Significance(TH1F* h_sig, TH1F* h_bkg)
+{
+  double significance = 0.;
+  for(int bin = 1; bin <= h_sig->GetNbinsX(); ++bin)
+  {
+    significance += pow(h_sig->GetBinContent(bin),2) / h_bkg->GetBinContent(bin);
+  }
+
+  return sqrt(significance);
+}

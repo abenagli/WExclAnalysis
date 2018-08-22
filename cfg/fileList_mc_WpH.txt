@@ -1,0 +1,1 @@
+/eos/cms//store/user/abenagli//HMUMU/ntuples/mc_2016_v3/WPlusH_HToMuMu_M125_13TeV_powheg_pythia8/HtoMuMu_ntuples_v1/180803_213052/0000/ntuple_1.root

@@ -46,24 +46,24 @@ StdHistoSet::StdHistoSet(const std::string& label, TFile* outFile):
   h1s_[Form("%s_h1_jets_25GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_25GeV_bTagT_n",label_.c_str()),"",10,-0.5,9.5);
   h1s_[Form("%s_h1_jets_30GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_30GeV_bTagT_n",label_.c_str()),"",10,-0.5,9.5);
   
-  h1s_[Form("%s_h1_jets_puppi_20GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_n",      label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_25GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_n",      label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_30GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_n",      label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
-  h1s_[Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_20GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_n",      label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_25GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_n",      label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_30GeV_n",      label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_n",      label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
+  // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str())] = new TH1F(Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str()),"",20,-0.5,9.5);
   
   h1s_[Form("%s_h1_met_pt", label_.c_str())] = new TH1F(Form("%s_h1_met_pt", label_.c_str()), "",10000,0.,500.);
   h1s_[Form("%s_h1_met_sig",label_.c_str())] = new TH1F(Form("%s_h1_met_sig",label_.c_str()), "",10000,0.,100.);
   
-  h1s_[Form("%s_h1_met_puppi_pt",  label_.c_str())] = new TH1F(Form("%s_h1_met_puppi_pt",label_.c_str()), "",10000,0.,500.);
-  h1s_[Form("%s_h1_met_puppi_sig", label_.c_str())] = new TH1F(Form("%s_h1_met_puppi_sig",label_.c_str()),"",10000,0.,100.);
+  // h1s_[Form("%s_h1_met_puppi_pt",  label_.c_str())] = new TH1F(Form("%s_h1_met_puppi_pt",label_.c_str()), "",10000,0.,500.);
+  // h1s_[Form("%s_h1_met_puppi_sig", label_.c_str())] = new TH1F(Form("%s_h1_met_puppi_sig",label_.c_str()),"",10000,0.,100.);
   
   for(std::map<std::string,TH1F*>::const_iterator mapIt = h1s_.begin(); mapIt != h1s_.end(); ++mapIt)
     (mapIt->second) -> Sumw2();
@@ -131,8 +131,8 @@ void StdHistoSet::FillHistos(const float& weight,
     
     h1s_[Form("%s_h1_met_pt", label_.c_str())] -> Fill( tv->met_pt, weight );
     h1s_[Form("%s_h1_met_sig",label_.c_str())] -> Fill( tv->met_sig,weight );
-    h1s_[Form("%s_h1_met_puppi_pt", label_.c_str())] -> Fill( tv->met_puppi_pt, weight );
-    h1s_[Form("%s_h1_met_puppi_sig",label_.c_str())] -> Fill( tv->met_puppi_sig,weight );
+    // h1s_[Form("%s_h1_met_puppi_pt", label_.c_str())] -> Fill( tv->met_puppi_pt, weight );
+    // h1s_[Form("%s_h1_met_puppi_sig",label_.c_str())] -> Fill( tv->met_puppi_sig,weight );
     
     int jets_20GeV_n = 0;
     int jets_25GeV_n = 0;
@@ -146,7 +146,7 @@ void StdHistoSet::FillHistos(const float& weight,
     int jets_20GeV_bTagT_n = 0;
     int jets_25GeV_bTagT_n = 0;
     int jets_30GeV_bTagT_n = 0;
-    for(int ii = 0; ii < tv->jets_n; ++ii)
+    for(unsigned int ii = 0; ii < tv->jets_pt->size(); ++ii)
     {
       if( tv->jets_pt->at(ii) < 20. ) continue;
       if( fabs(tv->jets_eta->at(ii)) > 3.0 ) continue;
@@ -191,61 +191,61 @@ void StdHistoSet::FillHistos(const float& weight,
     h1s_[Form("%s_h1_jets_25GeV_bTagT_n",label_.c_str())] -> Fill( jets_25GeV_bTagT_n);
     h1s_[Form("%s_h1_jets_30GeV_bTagT_n",label_.c_str())] -> Fill( jets_30GeV_bTagT_n);
     
-    int jets_puppi_20GeV_n = 0;
-    int jets_puppi_25GeV_n = 0;
-    int jets_puppi_30GeV_n = 0;
-    int jets_puppi_20GeV_bTagL_n = 0;
-    int jets_puppi_25GeV_bTagL_n = 0;
-    int jets_puppi_30GeV_bTagL_n = 0;
-    int jets_puppi_20GeV_bTagM_n = 0;
-    int jets_puppi_25GeV_bTagM_n = 0;
-    int jets_puppi_30GeV_bTagM_n = 0;
-    int jets_puppi_20GeV_bTagT_n = 0;
-    int jets_puppi_25GeV_bTagT_n = 0;
-    int jets_puppi_30GeV_bTagT_n = 0;
-    for(int ii = 0; ii < tv->jets_puppi_n; ++ii)
-    {
-      if( tv->jets_puppi_pt->at(ii) < 20. ) continue;
-      if( fabs(tv->jets_puppi_eta->at(ii)) > 3.0 ) continue;
+    // int jets_puppi_20GeV_n = 0;
+    // int jets_puppi_25GeV_n = 0;
+    // int jets_puppi_30GeV_n = 0;
+    // int jets_puppi_20GeV_bTagL_n = 0;
+    // int jets_puppi_25GeV_bTagL_n = 0;
+    // int jets_puppi_30GeV_bTagL_n = 0;
+    // int jets_puppi_20GeV_bTagM_n = 0;
+    // int jets_puppi_25GeV_bTagM_n = 0;
+    // int jets_puppi_30GeV_bTagM_n = 0;
+    // int jets_puppi_20GeV_bTagT_n = 0;
+    // int jets_puppi_25GeV_bTagT_n = 0;
+    // int jets_puppi_30GeV_bTagT_n = 0;
+    // for(unsigned int ii = 0; ii < tv->jets_puppi_pt->size(); ++ii)
+    // {
+    //   if( tv->jets_puppi_pt->at(ii) < 20. ) continue;
+    //   if( fabs(tv->jets_puppi_eta->at(ii)) > 3.0 ) continue;
       
-      bool skipJet = false;
-      for(unsigned int jj = 0; jj < mu.size(); ++jj)
-        if( DeltaR(tv->jets_puppi_eta->at(ii),tv->jets_puppi_phi->at(ii),mu.at(jj).v.Eta(),mu.at(jj).v.Phi()) < 0.4 ) { skipJet = true; break; }
-      if( skipJet ) continue;
+    //   bool skipJet = false;
+    //   for(unsigned int jj = 0; jj < mu.size(); ++jj)
+    //     if( DeltaR(tv->jets_puppi_eta->at(ii),tv->jets_puppi_phi->at(ii),mu.at(jj).v.Eta(),mu.at(jj).v.Phi()) < 0.4 ) { skipJet = true; break; }
+    //   if( skipJet ) continue;
       
-      if( tv->jets_puppi_pt->at(ii) >= 20. )
-      {
-        ++jets_puppi_20GeV_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_20GeV_bTagL_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_20GeV_bTagM_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_20GeV_bTagT_n;
-      }
-      if( tv->jets_puppi_pt->at(ii) >= 25. )
-      {
-        ++jets_puppi_25GeV_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_25GeV_bTagL_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_25GeV_bTagM_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_25GeV_bTagT_n;
-      }
-      if( tv->jets_puppi_pt->at(ii) >= 30. )
-      {
-        ++jets_puppi_30GeV_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_30GeV_bTagL_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_30GeV_bTagM_n;
-        if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_30GeV_bTagT_n;
-      }
-    }
-    h1s_[Form("%s_h1_jets_puppi_20GeV_n",label_.c_str())] -> Fill( jets_puppi_20GeV_n);
-    h1s_[Form("%s_h1_jets_puppi_25GeV_n",label_.c_str())] -> Fill( jets_puppi_25GeV_n);
-    h1s_[Form("%s_h1_jets_puppi_30GeV_n",label_.c_str())] -> Fill( jets_puppi_30GeV_n);
-    h1s_[Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagL_n);
-    h1s_[Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagL_n);
-    h1s_[Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagL_n);
-    h1s_[Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagM_n);
-    h1s_[Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagM_n);
-    h1s_[Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagM_n);
-    h1s_[Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagT_n);
-    h1s_[Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagT_n);
-    h1s_[Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagT_n);
+    //   if( tv->jets_puppi_pt->at(ii) >= 20. )
+    //   {
+    //     ++jets_puppi_20GeV_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_20GeV_bTagL_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_20GeV_bTagM_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_20GeV_bTagT_n;
+    //   }
+    //   if( tv->jets_puppi_pt->at(ii) >= 25. )
+    //   {
+    //     ++jets_puppi_25GeV_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_25GeV_bTagL_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_25GeV_bTagM_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_25GeV_bTagT_n;
+    //   }
+    //   if( tv->jets_puppi_pt->at(ii) >= 30. )
+    //   {
+    //     ++jets_puppi_30GeV_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.460 ) ++jets_puppi_30GeV_bTagL_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.800 ) ++jets_puppi_30GeV_bTagM_n;
+    //     if( tv->jets_puppi_bTag->at(ii).at(0) > 0.935 ) ++jets_puppi_30GeV_bTagT_n;
+    //   }
+    // }
+    // h1s_[Form("%s_h1_jets_puppi_20GeV_n",label_.c_str())] -> Fill( jets_puppi_20GeV_n);
+    // h1s_[Form("%s_h1_jets_puppi_25GeV_n",label_.c_str())] -> Fill( jets_puppi_25GeV_n);
+    // h1s_[Form("%s_h1_jets_puppi_30GeV_n",label_.c_str())] -> Fill( jets_puppi_30GeV_n);
+    // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagL_n);
+    // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagL_n);
+    // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagL_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagL_n);
+    // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagM_n);
+    // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagM_n);
+    // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagM_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagM_n);
+    // h1s_[Form("%s_h1_jets_puppi_20GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_20GeV_bTagT_n);
+    // h1s_[Form("%s_h1_jets_puppi_25GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_25GeV_bTagT_n);
+    // h1s_[Form("%s_h1_jets_puppi_30GeV_bTagT_n",label_.c_str())] -> Fill( jets_puppi_30GeV_bTagT_n);
   }
 }

@@ -35,7 +35,7 @@ struct TreeVars
   std::vector<std::vector<std::vector<int> > >* resoDau2_charge;
   std::vector<std::vector<std::vector<int> > >* resoDau2_pdgId;
   
-  int trueNumInteractions;
+  float trueNumInteractions;
   
   int vtxs_n;
   
@@ -81,27 +81,27 @@ struct TreeVars
   std::vector<int>* jets_NM;
   std::vector<std::vector<float> >* jets_bTag;
   
-  std::vector<float>* jets_puppi_pt;
-  std::vector<float>* jets_puppi_eta;
-  std::vector<float>* jets_puppi_phi;
-  std::vector<float>* jets_puppi_energy;
-  std::vector<int>* jets_puppi_charge;
-  std::vector<float>* jets_puppi_NHF;
-  std::vector<float>* jets_puppi_NEMF;
-  std::vector<float>* jets_puppi_CHF;
-  std::vector<float>* jets_puppi_MUF;
-  std::vector<float>* jets_puppi_CEMF;
-  std::vector<int>* jets_puppi_CM;
-  std::vector<int>* jets_puppi_NM;
-  std::vector<std::vector<float> >* jets_puppi_bTag;
+  /* std::vector<float>* jets_puppi_pt; */
+  /* std::vector<float>* jets_puppi_eta; */
+  /* std::vector<float>* jets_puppi_phi; */
+  /* std::vector<float>* jets_puppi_energy; */
+  /* std::vector<int>* jets_puppi_charge; */
+  /* std::vector<float>* jets_puppi_NHF; */
+  /* std::vector<float>* jets_puppi_NEMF; */
+  /* std::vector<float>* jets_puppi_CHF; */
+  /* std::vector<float>* jets_puppi_MUF; */
+  /* std::vector<float>* jets_puppi_CEMF; */
+  /* std::vector<int>* jets_puppi_CM; */
+  /* std::vector<int>* jets_puppi_NM; */
+  /* std::vector<std::vector<float> >* jets_puppi_bTag; */
   
   float met_pt;
   float met_phi;
   float met_sig;
   
-  float met_puppi_pt;
-  float met_puppi_phi;
-  float met_puppi_sig;
+  /* float met_puppi_pt; */
+  /* float met_puppi_phi; */
+  /* float met_puppi_sig; */
 };
 
 void InitTreeVars(TChain* chain_reco, TChain* chain_gen, TreeVars& treeVars);

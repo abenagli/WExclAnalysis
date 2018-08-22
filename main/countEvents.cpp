@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     } 
   }
   
-  std::cout << ">>> nTotEvents: " << h_pileup->GetEntries() << std::endl;
+  std::cout << ">>> nTotEvents: " << std::fixed << std::setprecision(0) << h_pileup->GetEntries() << std::endl;
   
   return 0;
 }

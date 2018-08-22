@@ -115,8 +115,10 @@ PlotTH1F::PlotTH1F(const std::string& varName,
     std::string scale = opts_.GetOpt<std::string>(Form("%s.%s.scale",varName_.c_str(),objectName.c_str()));
     int stack = opts_.GetOpt<int>(Form("%s.%s.stack",varName_.c_str(),objectName.c_str()));
     
-    std::cout << ">>> drawing variable" << formula << " for object " << objectName << std::endl;
-    t -> Draw( Form("%s >>%s_%s",formula.c_str(),objectName.c_str(),varName_.c_str()), (weight+"*"+scale).c_str(), "goff" );
+    std::string weight2 = opts_.GetOpt<std::string>(Form("%s.%s.weight",varName_.c_str(),objectName.c_str()));
+    
+    std::cout << ">>> drawing variable " << formula << " for object " << objectName << std::endl;
+    t -> Draw( Form("%s >>%s_%s",formula.c_str(),objectName.c_str(),varName_.c_str()), (weight+"*"+weight2+"*"+scale).c_str(), "goff" );
     
     if( normalization == "area" && stack != 1 ) object -> Scale(1./object->Integral());
     if( (normalization == "lumi" || normalization == "lumiScaled") && isData != 1 ) object -> Scale(1.*lumi);
@@ -127,7 +129,7 @@ PlotTH1F::PlotTH1F(const std::string& varName,
       {
         float binContent = object->GetBinContent(bin);
         if( binContent > yMax ) yMax = binContent;
-        // if( binContent < yMin && binContent > 0 ) yMin = binContent;
+        if( binContent < yMin && binContent > 0 ) yMin = binContent;
       }
     }
     
@@ -194,15 +196,12 @@ PlotTH1F::PlotTH1F(const std::string& varName,
   if( hs->GetMaximum() > yMax ) yMax = hs->GetMaximum();
   hs_histos = hs->GetHists();
   next = hs_histos;
-  std::cout << "qui" << std::endl;
-  while( (hist =(TH1F*)next()) )
+  while( (hist =(TH1F*)next()) )  
   {
-    std::cout << "qu2" << std::endl;
     for(int bin = 0; bin <= nBinsX+1; ++bin)
     {
       float binContent = hist->GetBinContent(bin);
-      std::cout << "histo: " << hist->GetName() << "   bin: " << bin << "binContent: " << binContent << "   yMin: " << yMin << std::endl;
-      if( binContent < yMin && binContent > 0 ) { yMin = binContent; std::cout << "histo: " << hist->GetName() << "   bin: " << bin << "   yMin: " << yMin << std::endl; }
+      if( binContent < yMin && binContent > 0 ) yMin = binContent;
     }
     
     break;
@@ -212,11 +211,12 @@ PlotTH1F::PlotTH1F(const std::string& varName,
   //-------
   // legend
   
-  TLegend* legend = new TLegend(0.80,0.90-0.04*objectList.size(),0.93,0.90);
+  TLegend* legend = new TLegend(0.80,0.92-0.04*objectList.size(),0.96,0.92);
   legend -> SetFillColor(0);
-  legend -> SetFillStyle(1000);  
+  legend -> SetFillStyle(0);
   legend -> SetTextFont(42);  
   legend -> SetTextSize(0.03);
+  legend -> SetBorderSize(0);
   
   for(unsigned int ii = 0; ii < objectList.size(); ++ii)
   {
@@ -224,12 +224,13 @@ PlotTH1F::PlotTH1F(const std::string& varName,
     
     std::string objectName = objectList.at(ii);
     int isData = opts_.GetOpt<int>(Form("%s.%s.isData",varName_.c_str(),objectName.c_str()));
+    int stack = opts_.GetOpt<int>(Form("%s.%s.stack",varName_.c_str(),objectName.c_str()));
     std::string scale = opts_.GetOpt<std::string>(Form("%s.%s.scale",varName_.c_str(),objectName.c_str()));    
     std::vector<std::string> legendSettings = opts_.GetOpt<std::vector<std::string> >(Form("%s.%s.legend",varName_.c_str(),objectName.c_str()));
     
     std::string legendExtra = "";
     if( atof(scale.c_str()) != 1. ) legendExtra = "#times" + scale;
-    if( normalization == "lumiScaled" && h_sum != NULL && !isData ) legendExtra = Form("#times%.2f",atof(scale.c_str())*scaleFactor);
+    if( normalization == "lumiScaled" && h_sum != NULL && !isData && stack ) legendExtra = Form("#times%.2f",atof(scale.c_str())*scaleFactor);
     legend -> AddEntry(object,(legendSettings.at(0)+legendExtra).c_str(),legendSettings.at(1).c_str());
   }
   
@@ -244,12 +245,12 @@ PlotTH1F::PlotTH1F(const std::string& varName,
   {
     pad1 = new TPad("pad1","pad1",0,0.3,1,1.0);
     pad1->SetBottomMargin(0.03); // Upper and lower plot are joined
-    pad1->SetGridx();           // Vertical grid
-    pad1->Draw();               // Draw the upper pad: pad1
+    // pad1->SetGridx();            // Vertical grid
+    pad1->Draw();                // Draw the upper pad: pad1
     pad1->cd(); 
   }
   
-  TH1F* hPad = (TH1F*)( gPad->DrawFrame(xMin-(xMax-xMin)/nBinsX,0.,xMax+(xMax-xMin)/nBinsX,1.25*yMax) );
+  TH1F* hPad = (TH1F*)( gPad->DrawFrame(xMin-(xMax-xMin)/nBinsX,0.,xMax+(xMax-xMin)/nBinsX,1.40*yMax) );
   if( normalization == "area" ) hPad -> SetTitle(Form(";%s %s;event fraction / %.1e %s",title.c_str(),unitString.c_str(),(xMax-xMin)/nBinsX,unitString.c_str()));
   if( normalization == "lumi" || normalization == "lumiScaled") hPad -> SetTitle(Form(";%s %s;events / %.1e %s",title.c_str(),unitString.c_str(),(xMax-xMin)/nBinsX,unitString.c_str()));
   hPad->GetXaxis()->SetTitleFont(43);
@@ -299,6 +300,7 @@ PlotTH1F::PlotTH1F(const std::string& varName,
     pad2->SetTopMargin(0.03);
     pad2->SetBottomMargin(0.4);
     pad2->SetGridx(); // vertical grid
+    pad2->SetGridy(); // horizontal grid
     pad2->Draw();
     pad2->cd();
     
@@ -338,14 +340,14 @@ PlotTH1F::PlotTH1F(const std::string& varName,
   {
     pad1 -> cd();
     if( normalization == "lumi" || normalization == "lumiScaled" )
-      CMS_lumi(pad1,4,10);
+      CMS_lumi(pad1,5,10);
     legend -> Draw("same");
   }
   else
   {
     c_ -> cd();
     if( normalization == "lumi" || normalization == "lumiScaled" )
-      CMS_lumi(c_,4,10);
+      CMS_lumi(c_,5,10);
     legend -> Draw("same");
   }
   
@@ -356,12 +358,12 @@ PlotTH1F::PlotTH1F(const std::string& varName,
   {
     pad1 = new TPad("pad1","pad1",0,0.3,1,1.0);
     pad1->SetBottomMargin(0.03); // Upper and lower plot are joined
-    pad1->SetGridx();         // Vertical grid
-    pad1->Draw();             // Draw the upper pad: pad1
+    // pad1->SetGridx();            // Vertical grid
+    pad1->Draw();                // Draw the upper pad: pad1
     pad1->cd();
   }
   
-  TH1F* hPadLog = (TH1F*)( gPad->DrawFrame(xMin-(xMax-xMin)/nBinsX,yMin/5.,xMax+(xMax-xMin)/nBinsX,5.*yMax) );
+  TH1F* hPadLog = (TH1F*)( gPad->DrawFrame(xMin-(xMax-xMin)/nBinsX,yMin/5.,xMax+(xMax-xMin)/nBinsX,100.*yMax) );
   if( normalization == "area" ) hPadLog -> SetTitle(Form(";%s %s;event fraction / %.1e %s",title.c_str(),unitString.c_str(),(xMax-xMin)/nBinsX,unitString.c_str()));
   if( normalization == "lumi" || normalization == "lumiScaled" ) hPadLog -> SetTitle(Form(";%s %s;events / %.1e %s",title.c_str(),unitString.c_str(),(xMax-xMin)/nBinsX,unitString.c_str()));
   hPadLog->GetXaxis()->SetTitleFont(43);
@@ -401,6 +403,7 @@ PlotTH1F::PlotTH1F(const std::string& varName,
     pad2->SetTopMargin(0.03);
     pad2->SetBottomMargin(0.4);
     pad2->SetGridx(); // vertical grid
+    pad2->SetGridy(); // horizontal grid
     pad2->Draw();
     pad2->cd();
     
