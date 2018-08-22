@@ -102,6 +102,6 @@ void PrintEvent(std::vector<particle>& mu);
 std::ostream& operator<<(std::ostream& os, const TLorentzVector& v);
 std::ostream& operator<<(std::ostream& os, const particle& p);
 
-double Significance(TH1F* h_sig, TH1F* h_bkg);
+double ComputeSignificance(TH1F* h_sig, TH1F* h_bkg, const int& mode = 1);
 
 #endif

@@ -14,9 +14,11 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TF1.h"
 #include "TEfficiency.h"
 #include "TLorentzVector.h"
 #include "TGraph.h"
+#include "TGraph2D.h"
 #include "TLegend.h"
 #include "TDirectory.h"
 
@@ -66,25 +68,49 @@ int main(int argc, char** argv)
   
   
   // define histograms
-  std::map<std::string,TH1F*> h1_sig;
-  std::map<std::string,TH1F*> h1_bkg;
+  TFile* outFile = TFile::Open(Form("categories.root"),"RECREATE");
+  outFile -> cd();
+  
+  std::map<std::pair<float,float>,std::map<std::string,TH1F*> > h1_sig;
+  std::map<std::pair<float,float>,std::map<std::string,TH1F*> > h1_bkg;
+  std::map<std::pair<float,float>,std::map<std::string,TH1F*> > h1_bkg_fit;
   
   std::vector<float> mjjcut;
-  mjjcut.push_back(300);
-  // mjjcut.push_back(400);
-  // mjjcut.push_back(500);
-  // mjjcut.push_back(600);
-  // mjjcut.push_back(700);
-  // mjjcut.push_back(800);
+  mjjcut.push_back(400.);
+  mjjcut.push_back(500.);
+  mjjcut.push_back(600.);
+  mjjcut.push_back(700.);
+  mjjcut.push_back(800.);
+  mjjcut.push_back(900.);
+  mjjcut.push_back(1000.);
+  mjjcut.push_back(1100.);
+  mjjcut.push_back(1200.);
+  mjjcut.push_back(1300.);
+  mjjcut.push_back(1500.);
+  mjjcut.push_back(1700.);
+  mjjcut.push_back(2000.);
   std::vector<float> detacut;
-  detacut.push_back(2);
-  // detacut.push_back(3);
-  // detacut.push_back(4);
-  // detacut.push_back(5);
-  // detacut.push_back(6);
-  // detacut.push_back(7);
+  detacut.push_back(2.);
+  detacut.push_back(3.);
+  detacut.push_back(4.);
+  detacut.push_back(5.);
+  detacut.push_back(6.);
+  detacut.push_back(7.);
   
-  TH2F* h2_totSignificance = new TH2F("h2_totSignificance","",6,250,850,6,1.5,7.5);
+  std::vector<std::string> categories;
+  categories.push_back("cat0");
+  categories.push_back("cat1");
+  
+  for(auto mjjIt : mjjcut)
+    for(auto detaIt : detacut)
+      for(auto cat : categories)
+      {            
+        std::pair<float,float> dummy_key(mjjIt,detaIt);
+        h1_sig[dummy_key][cat] = new TH1F(Form("h1_sig_mjj%.1f_deta%.1f_%s",mjjIt,detaIt,cat.c_str()),"",60,110.,140.);
+        h1_bkg[dummy_key][cat] = new TH1F(Form("h1_bkg_mjj%.1f_deta%.1f_%s",mjjIt,detaIt,cat.c_str()),"",60,110.,140.);
+        h1_bkg_fit[dummy_key][cat] = new TH1F(Form("h1_bkg_fit_mjj%.1f_deta%.1f_%s",mjjIt,detaIt,cat.c_str()),"",60,110.,140.);
+      }
+  
   
   
   // loop over samples
@@ -112,7 +138,12 @@ int main(int argc, char** argv)
     int nEntries = (mapIt.second)->GetEntries();
     for(int entry = 0; entry < nEntries; ++entry)
     {
-      if( entry%100000 == 0 ) std::cout << ">>>>>> 1st loop: reading entry " << entry << " / " << nEntries << "\r" << std::flush;
+      if( entry%100000 == 0 ) std::cout << ">>>>>> 1st loop: reading entry "
+                                        << std::fixed << std::setw(8) << entry
+                                        << " / "
+                                        << std::fixed << std::setw(8) << nEntries
+                                        << " (" << std::fixed << std::setprecision(1) << std::setw(5) << float(entry)/float(nEntries)*100. << "%)"
+                                        << "\r" << std::flush;
       (mapIt.second)->GetEntry(entry);
       
       if( !(weight<10000.) ) weight = 0.;
@@ -122,34 +153,75 @@ int main(int argc, char** argv)
       if( met_pt > 60. ) continue;
       if( std::max(mu1_pt,mu2_pt) < 26. ) continue;
       
-      std::string label(Form("mjj%.1f_deta%.1f",mjjIt,detaIt));
-            
       for(auto mjjIt : mjjcut)
         for(auto detaIt : detacut)
         {
+          std::pair<float,float> dummy_key(mjjIt,detaIt);
+          
           if( jet_all_mass >= mjjIt && jet_all_Deta >= detaIt)
           {            
-            std::string label_cat = label + "_cat0";
-            
-            if( h1_sig[label_cat] == NULL ) h1_sig[label_cat] = new TH1F(Form("h1_sig_%s",label_cat.c_str()),"",60,110.,140.);
-            if( h1_bkg[label_cat] == NULL ) h1_bkg[label_cat] = new TH1F(Form("h1_bkg_%s",label_cat.c_str()),"",60,110.,140.);
-            
-            if( isSig ) h1_sig[label_cat] -> Fill(H_mass,weight);
-            if( isBkg ) h1_bkg[label_cat] -> Fill(H_mass,weight);
+            if( isSig ) h1_sig[dummy_key]["cat0"] -> Fill(H_mass,weight);
+            if( isBkg ) h1_bkg[dummy_key]["cat0"] -> Fill(H_mass,weight);
           }
           
           else
           {
-            std::string label_cat = label + "_cat1";
-            
-            if( h1_sig[label_cat] == NULL ) h1_sig[label_cat] = new TH1F(Form("h1_sig_%s",label_cat.c_str()),"",60,110.,140.);
-            if( h1_bkg[label_cat] == NULL ) h1_bkg[label_cat] = new TH1F(Form("h1_bkg_%s",label_cat.c_str()),"",60,110.,140.);
-
-            if( isSig ) h1_sig[label_cat] -> Fill(H_mass,weight);
-            if( isBkg ) h1_bkg[label_cat] -> Fill(H_mass,weight);            
+            if( isSig ) h1_sig[dummy_key]["cat1"] -> Fill(H_mass,weight);
+            if( isBkg ) h1_bkg[dummy_key]["cat1"] -> Fill(H_mass,weight);
           }
         }
     } // loop over entries
+    std::cout << std::endl;
+    
   } // loop over samples
+  std::cout << std::endl;
   
+  
+  TGraph2D* g2_totSignificance_mode1 = new TGraph2D();
+  TGraph2D* g2_totSignificance_mode2 = new TGraph2D();
+  
+  for(auto mjjIt : mjjcut)
+    for(auto detaIt : detacut)
+    {
+      double totSignificance_mode1 = 0.;
+      double totSignificance_mode2 = 0.;
+      
+      // loop over categories
+      for(auto cat : categories )
+      {
+        std::pair<float,float> dummy_key(mjjIt,detaIt);
+        
+        std::string label(Form("mjj%.1f_deta%.1f_%s",mjjIt,detaIt,cat.c_str()));
+        TF1* fitFunc = new TF1(Form("fitFunc_%s",label.c_str()),"[3]*(exp([0]*x+[1]*x*x))/((x-90)^[2]+(2.5/2.)^[2])",110.,140.);
+        fitFunc -> SetParameters(5.88026e-02,-1.89398e-04,2.28365e+00,h1_bkg[dummy_key][cat]->Integral());
+        h1_bkg[dummy_key][cat] -> Fit(fitFunc,"QNRLS+");
+        fitFunc -> Write();
+        
+        for(int bin = 1; bin <= h1_bkg_fit[dummy_key][cat]->GetNbinsX(); ++bin)
+          h1_bkg_fit[dummy_key][cat] -> SetBinContent(bin,fitFunc->Eval(h1_bkg_fit[dummy_key][cat]->GetBinCenter(bin)));
+        
+        double catSignificance_mode1 = ComputeSignificance(h1_sig[dummy_key][cat],h1_bkg_fit[dummy_key][cat],1);
+        double catSignificance_mode2 = ComputeSignificance(h1_sig[dummy_key][cat],h1_bkg_fit[dummy_key][cat],2);
+        totSignificance_mode1 += catSignificance_mode1*catSignificance_mode1;
+        totSignificance_mode2 += catSignificance_mode2*catSignificance_mode2;
+      } // loop over categories
+      
+      totSignificance_mode1 = sqrt(totSignificance_mode1);
+      totSignificance_mode2 = sqrt(totSignificance_mode2);
+      
+      g2_totSignificance_mode1 -> SetPoint(g2_totSignificance_mode1->GetN(),mjjIt,detaIt,totSignificance_mode1);
+      g2_totSignificance_mode2 -> SetPoint(g2_totSignificance_mode2->GetN(),mjjIt,detaIt,totSignificance_mode2);
+    }
+  
+  
+  
+  g2_totSignificance_mode1 -> Write("g2_totSignificance_mode1");
+  g2_totSignificance_mode2 -> Write("g2_totSignificance_mode2");
+  
+  int bytes = outFile -> Write();
+  std::cout << "============================================"  << std::endl;
+  std::cout << "nr of  B written:  " << int(bytes)             << std::endl;
+  std::cout << "nr of KB written:  " << int(bytes/1024.)       << std::endl;
+  std::cout << "nr of MB written:  " << int(bytes/1024./1024.) << std::endl;
+  std::cout << "============================================"  << std::endl;
 }

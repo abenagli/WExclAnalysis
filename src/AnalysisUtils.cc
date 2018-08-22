@@ -156,13 +156,21 @@ std::ostream& operator<<(std::ostream& os, const particle& p)
 
 
 
-double Significance(TH1F* h_sig, TH1F* h_bkg)
+double ComputeSignificance(TH1F* h_sig, TH1F* h_bkg, const int& mode)
 {
   double significance = 0.;
+  
   for(int bin = 1; bin <= h_sig->GetNbinsX(); ++bin)
   {
-    significance += pow(h_sig->GetBinContent(bin),2) / h_bkg->GetBinContent(bin);
+    float S = h_sig->GetBinContent(bin);
+    float B = h_bkg->GetBinContent(bin);
+    
+    if( B > 0 )
+    {
+      if( mode == 1 ) significance += S*S / B;
+      if( mode == 2 ) significance += 2.*((S+B)*log(1.+S/B)-S);
+    }
   }
-
+  
   return sqrt(significance);
 }
